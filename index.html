@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SCTA Statistics</title>
+        <!-- data-main attribute tells require.js to load
+             scripts/main.js after require.js loads. -->
+        <link href="css/base.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+
+        <script data-main="js/main" src="js/vendor/require.js"></script>
+        
+    </head>
+    <body style="margin: auto; margin: 20px;">
+    		<div id="head-region"></div>
+    		<div id="body-region" ></div>
+    		
+        <script id="show-graph" type="text/template">
+        	<p><%- title %><p>
+        	<p><%- description %><p>
+            <p><a href="#" class="js-list-graphs">Back to Graph List<a></p>
+        </script>
+
+        <script id="show-graph-descriptions" type="text/template">
+        <p><a href="#" class="js-show-graph"><%- title %></a></p>
+        <p><%- description %></p>
+        </script>
+
+        
+
+    </body>
+</html>
