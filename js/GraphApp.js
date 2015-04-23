@@ -112,8 +112,10 @@ GraphApp.on("start", function(options){
 		}
 		else if (Backbone.history.fragment.includes("graph/")){
 			var id = Backbone.history.fragment.split("/").slice().pop();
-			console.log(Backbone.history.fragment.split("/"));
 			GraphApp.Show.Controller.showGraph(id);
+		}
+		else{
+			GraphApp.Show.Controller.showGraphList();
 		}
 			
 	}
