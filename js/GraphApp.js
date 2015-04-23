@@ -1,22 +1,14 @@
 //Create Graph Object
 var GraphApp = new Marionette.Application();
 
-//Initiate Graph
-GraphApp.on("start", function(options){
-	if (Backbone.history){
-		Backbone.history.start;
-	}
-	console.log("started successfully");
-	//GraphApp.Show.Controller.showGraph(5);
-	GraphApp.Show.Controller.showGraphList();
-});
 //define regions
 GraphApp.addRegions({
 		headRegion: "#head-region",
 		mainRegion: "#body-region"
 });
 
-//
+
+//Collection
 var graphs = new Backbone.Collection([
 	{id: 1, title: "Frequency of Mentions of Scholastic Authors", description: "A Graph that shows the frequency of mentions of Scholastic authors in medieval Sentences commentaries", query: 'select ?ref ?reftitle  (count(?element) as ?count) where { ?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . ?ref <http://scta.info/property/personType> <http://scta.info/resource/persontype/Biblical> .} group by ?ref ?reftitle'},
 	{id: 2, title: "Frequency of Mentions of Biblical Authors", description: "A Graph that shows the frequency of mentions of Biblical authors in medieval Sentences commentaries", query: 'select ?ref ?reftitle  (count(?element) as ?count) where { ?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . ?ref <http://scta.info/property/personType> <http://scta.info/resource/persontype/Biblical> .} group by ?ref ?reftitle'},
@@ -90,6 +82,7 @@ GraphApp.module("Show", function(Show, GraphApp, Backbone, Marionette, $, _){
 			var graphView = new Show.Graph({
 				model: graph
 			});
+			Backbone.history.navigate("graph/" + id);
 			GraphApp.headRegion.empty();
 			GraphApp.headRegion.show(graphView);
 			GraphApp.mainRegion.empty();
@@ -99,6 +92,7 @@ GraphApp.module("Show", function(Show, GraphApp, Backbone, Marionette, $, _){
 			var graphsView = new Show.GraphCollection({
 				collection: graphs
 			});
+			Backbone.history.navigate("graphs");
 			GraphApp.headRegion.empty();
 			GraphApp.mainRegion.empty();
 			GraphApp.mainRegion.show(graphsView)
@@ -109,3 +103,20 @@ GraphApp.module("Show", function(Show, GraphApp, Backbone, Marionette, $, _){
 
 
 
+GraphApp.on("start", function(options){
+	if(Backbone.history){
+		Backbone.history.start();
+		console.log(Backbone.history.fragment);
+		if (Backbone.history.fragment === "graphs"){
+			GraphApp.Show.Controller.showGraphList();
+		}
+		else if (Backbone.history.fragment.includes("graph/")){
+			var id = Backbone.history.fragment.split("/").slice().pop();
+			console.log(Backbone.history.fragment.split("/"));
+			GraphApp.Show.Controller.showGraph(id);
+		}
+			
+	}
+	
+	
+});
