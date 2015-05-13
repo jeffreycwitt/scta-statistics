@@ -59,9 +59,10 @@ console.log(query);
 			//.domain(d3.range(0, data.length))
 			//.rangeBands([0, height])
 
-		var yScale = d3.scale.linear()
-			.domain([0, d3.max(countArray)]) 
-			.range([0, height]);
+		//var yScale = d3.scale.linear()
+		var yScale = d3.scale.log()
+			.domain([1, d3.max(countArray)]) 
+			.range([height, 1]);
 
 		var xScale = d3.scale.ordinal()
 			.domain(d3.range(0, data.length))
@@ -130,9 +131,11 @@ console.log(query);
 					.range([height, 0])
 
 				var vAxis = d3.svg.axis()
-					.scale(vGuideScale)
+					//.scale(vGuideScale)
+					.scale(yScale)
 					.orient('left')
 					.ticks(10)
+					.tickFormat(function(d){return d;})
 				var vGuide = d3.select('svg#' + chart).append('g')
 					vAxis(vGuide) 
 					vGuide.attr('transform', 'translate('+ margin.left+', '+margin.top + ')')
