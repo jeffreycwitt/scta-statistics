@@ -13,7 +13,9 @@ function chartDisplay(query, chart, sort){
 	var jsonarray = [];
 	
 console.log(query);
-	$.get("http://sparql.scta.info/ds/query", {"query" : query}, function( resp ) {
+	//
+	$.get("http://sparql-staging.scta.info/ds/query", {"query" : query}, function( resp ) {
+	//$.get("http://localhost:3030/ds/query", {"query" : query}, function( resp ) {
 
 		var items = resp.results.bindings
 		console.log(items)

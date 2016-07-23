@@ -7,23 +7,110 @@ GraphApp.addRegions({
 		mainRegion: "#body-region"
 });
 
+var nameFrequencyQuery = function(expressionId, nameType){
+	var subset_filter = "";
+	
+		if (expressionId !== "all"){
+			subset_filter = [
+				"?element <http://scta.info/property/isPartOfStructureBlock> ?block .",
+				"?block <http://scta.info/property/isPartOfTopLevelExpression> <http://scta.info/resource/" + expressionId + "> ."
+			].join('');
+		}
+
+		if (nameType !== "all"){
+			nameTypeFilter = [
+				"?ref <http://scta.info/property/personType> <http://scta.info/resource/" + nameType + "> ."
+			].join('');
+		}
+		
+
+		var query = [
+			"select ?ref ?reftitle (count(?element) as ?count)", 
+			"where {", 
+			"?element <http://scta.info/property/expressionType> <http://scta.info/resource/structureElement> .",
+			subset_filter,
+			"?element <http://scta.info/property/structureElementType> <http://scta.info/resource/structureElementName> .", 
+			"?element <http://scta.info/property/isInstanceOf> ?ref .", 
+			"?ref <http://purl.org/dc/elements/1.1/title> ?reftitle .", 
+			nameTypeFilter,
+			"}", 
+			"group by ?ref ?reftitle",
+		].join('');
+	return query;
+};
 
 //Collection
 var graphs = new Backbone.Collection([
-	{id: 1, title: "Frequency of Mentions of Scholastic Names", description: "A Graph that shows the frequency of mentions of Scholastic names in medieval Sentences commentaries", query: 'select ?ref ?reftitle  (count(?element) as ?count) where { ?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . ?ref <http://scta.info/property/personType> <http://scta.info/resource/persontype/Scholastic> .} group by ?ref ?reftitle'},
-	{id: 2, title: "Frequency of Mentions of Biblical Names", description: "A Graph that shows the frequency of mentions of Biblical names in medieval Sentences commentaries", query: 'select ?ref ?reftitle  (count(?element) as ?count) where { ?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . ?ref <http://scta.info/property/personType> <http://scta.info/resource/persontype/Biblical> .} group by ?ref ?reftitle'},
-	{id: 3, title: "Frequency of Mentions of Classical Names", description: "A Graph that shows the frequency of mentions of Classical names in medieval Sentences commentaries", query: 'select ?ref ?reftitle  (count(?element) as ?count) where { ?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . ?ref <http://scta.info/property/personType> <http://scta.info/resource/persontype/Classical> .} group by ?ref ?reftitle'},
-	{id: 4, title: "Frequency of Mentions of Patristic Names", description: "A Graph that shows the frequency of mentions of Patristic names in medieval Sentences commentaries", query: 'select ?ref ?reftitle  (count(?element) as ?count) where { ?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . ?ref <http://scta.info/property/personType> <http://scta.info/resource/persontype/Patristic> .} group by ?ref ?reftitle'},
-	{id: 5, title: "Frequency of Mentions of Any Names", description: "A Graph that shows the frequency of mentions of any author in medieval Sentences commentaries", query: "select ?ref ?reftitle  (count(?element) as ?count) where { ?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . } group by ?ref ?reftitle"},
+	{
+		id: 1, 
+		title: "Frequency of Mentions of Scholastic Names", 
+		description: "A Graph that shows the frequency of mentions of Scholastic names in medieval Sentences commentaries", 
+		//query: [
+		//'select ?ref ?reftitle',
+		//  '(count(?element) as ?count) where {', 
+		//  '?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . ?ref <http://scta.info/property/personType> <http://scta.info/resource/persontype/Scholastic> .} group by ?ref ?reftitle'
+		query: nameFrequencyQuery("all", "scholastic")
+	},
+	{
+		id: 2, 
+		title: "Frequency of Mentions of Biblical Names", 
+		description: "A Graph that shows the frequency of mentions of Biblical names in medieval Sentences commentaries", 
+		//query: 'select ?ref ?reftitle  (count(?element) as ?count) where { ?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . ?ref <http://scta.info/property/personType> <http://scta.info/resource/persontype/Biblical> .} group by ?ref ?reftitle'
+		query: nameFrequencyQuery("all", "biblical")
+	},
+	{
+		id: 3, 
+		title: "Frequency of Mentions of Classical Names", 
+		description: "A Graph that shows the frequency of mentions of Classical names in medieval Sentences commentaries", 
+		//query: 'select ?ref ?reftitle  (count(?element) as ?count) where { ?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . ?ref <http://scta.info/property/personType> <http://scta.info/resource/persontype/Classical> .} group by ?ref ?reftitle'
+		query: nameFrequencyQuery("all", "classical")
+	},
+	{
+		id: 4, 
+		title: "Frequency of Mentions of Patristic Names", 
+		description: "A Graph that shows the frequency of mentions of Patristic names in medieval Sentences commentaries", 
+		//query: 'select ?ref ?reftitle  (count(?element) as ?count) where { ?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . ?ref <http://scta.info/property/personType> <http://scta.info/resource/persontype/Patristic> .} group by ?ref ?reftitle'
+		query: nameFrequencyQuery("all", "patristic")
+	},
+	{
+		id: 5, 
+		title: "Frequency of Mentions of Any Names", 
+		description: "A Graph that shows the frequency of mentions of any author in medieval Sentences commentaries", 
+		query: nameFrequencyQuery("all", "all")
+	},
+	
+	{id: 8, 
+		title: "Frequency of Mentions of Names in Plaoul's Commentary", 
+		description: "A Graph that shows the frequency of names mentioned in Peter Plaoul's Commentary on the Sentences", 
+		query: nameFrequencyQuery("plaoulcommentary", "all")
+	},
+	{id: 9, 
+		title: "Frequency of Mentions of Names in Wodeham's Commentary", 
+		description: "A Graph that shows the frequency of names mentioned in Adam Wodeham's Ordinatio Commentary on the Sentences", 
+		query: nameFrequencyQuery("wodehamordinatio", "all")
+	},
+	{id: 10, 
+		title: "Frequency of Mentions of Names in Gracilis's Commentary", 
+		description: "A Graph that shows the frequency of names mentioned in Peter Gracilis's Commentary on the Sentences", 
+		query: nameFrequencyQuery("graciliscommentary", "all")
+	},
 	//{id: 6, title: "Frequency of Use of Scholastic Quotations", description: "A Graph that shows the frequency of use of scholastic quotations in medieval Sentences commentaries", query: "select ?ref ?reftitle (count(?element) as ?count) where {?element a <http://scta.info/resource/quoteElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://scta.info/property/citation> ?reftitle . ?ref <http://scta.info/property/quotationType> <http://scta.info/resource/quotationType/Scholastic> .} group by ?ref ?reftitle"},
-	{id: 7, title: "Frequency of Use of Biblical Quotations", description: "A Graph that shows the frequency of use of biblical quotations in medieval Sentences commentaries", query: "select ?ref ?reftitle (count(?element) as ?count) where {?element a <http://scta.info/resource/quoteElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://scta.info/property/citation> ?reftitle . ?ref <http://scta.info/property/quotationType> <http://scta.info/resource/quoteType/Biblical> .} group by ?ref ?reftitle"},
-	//{id: 8, title: "Frequency of Use of Classical Quotations", description: "A Graph that shows the frequency of use of classical quotations in medieval Sentences commentaries", query: "select ?ref ?reftitle (count(?element) as ?count) where {?element a <http://scta.info/resource/quoteElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://scta.info/property/citation> ?reftitle . ?ref <http://scta.info/property/quotationType> <http://scta.info/resource/quotationType/Classical> .} group by ?ref ?reftitle"},
-	//{id: 9, title: "Frequency of Use of Patristic Quotations", description: "A Graph that shows the frequency of use of patristic quotations in medieval Sentences commentaries", query: "select ?ref ?reftitle (count(?element) as ?count) where {?element a <http://scta.info/resource/quoteElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://scta.info/property/citation> ?reftitle . ?ref <http://scta.info/property/quotationType> <http://scta.info/resource/quotationType/Patristic> .} group by ?ref ?reftitle"},
-	//{id: 10, title: "Frequency of Use of All Quotations", description: "A Graph that shows the frequency of use of all quotations in medieval Sentences commentaries", query: "select ?ref ?reftitle (count(?element) as ?count) where {?element a <http://scta.info/resource/quoteElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://scta.info/property/citation> ?reftitle .} group by ?ref ?reftitle"},
-	{id: 8, title: "Frequency of Mentions of Names in Olivi's Commentary", description: "A Graph that shows the frequency of names mentioned in Peter John Olivi's Commentary on the Sentences", query: "select ?ref ?reftitle  (count(?element) as ?count) where { <http://scta.info/text/olivicommentary/commentary> <http://scta.info/property/hasItem> ?item . ?item <http://scta.info/property/hasName> ?element . ?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . } group by ?ref ?reftitle"},
-	{id: 9, title: "Frequency of Mentions of Names in Plaoul's Commentary", description: "A Graph that shows the frequency of names mentioned in Peter Plaoul's Commentary on the Sentences", query: "select ?ref ?reftitle  (count(?element) as ?count) where { <http://scta.info/text/plaoulcommentary/commentary> <http://scta.info/property/hasItem> ?item . ?item <http://scta.info/property/hasName> ?element . ?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . } group by ?ref ?reftitle"},
-	{id: 10, title: "Frequency of Mentions of Names in Wodeham's Commentary", description: "A Graph that shows the frequency of names mentioned in Adam Wodeham's Ordinatio Commentary on the Sentences", query: "select ?ref ?reftitle  (count(?element) as ?count) where { <http://scta.info/text/wodehamordinatio/commentary> <http://scta.info/property/hasItem> ?item . ?item <http://scta.info/property/hasName> ?element . ?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . } group by ?ref ?reftitle"},
-	{id: 11, title: "Frequency of Mentions of Names in Gracilis's Commentary", description: "A Graph that shows the frequency of names mentioned in Peter Gracilis's Commentary on the Sentences", query: "select ?ref ?reftitle  (count(?element) as ?count) where { <http://scta.info/text/graciliscommentary/commentary> <http://scta.info/property/hasItem> ?item . ?item <http://scta.info/property/hasName> ?element . ?element a <http://scta.info/resource/nameElement> . ?element <http://scta.info/property/isInstanceOf> ?ref . ?ref <http://purl.org/dc/elements/1.1/title> ?reftitle . } group by ?ref ?reftitle"},
+	{
+		id: 7, 
+		title: "Frequency of Use of Biblical Quotations", 
+		description: "A Graph that shows the frequency of use of biblical quotations in medieval Sentences commentaries", 
+		query: [
+			"select ?ref ?reftitle (count(?element) as ?count)",
+			"where {",
+			"?element <http://scta.info/property/expressionType> <http://scta.info/resource/structureElement> .",
+			"?element <http://scta.info/property/structureElementType> <http://scta.info/resource/structureElementQuote> .", 
+			"?element <http://scta.info/property/isInstanceOf> ?ref .",
+			"?ref <http://scta.info/property/citation> ?reftitle .", 
+			"?ref <http://scta.info/property/quotationType> <http://scta.info/resource/biblical> .",
+			"}", 
+			"group by ?ref ?reftitle",
+			].join('')
+	},
 	
 
 ]);
@@ -41,7 +128,7 @@ GraphApp.module("Show", function(Show, GraphApp, Backbone, Marionettte, $, _){
 			e.preventDefault();
 			e.stopPropagation();
 			//hides lingering tool tip
-			$(".tooltip").css('opacity', 0)
+			$(".tooltip").css('opacity', 0);
 			this.$el.parent().parent().fadeOut(500, function(){
 				GraphApp.Show.Controller.showGraphList();
 			}); 
@@ -99,10 +186,10 @@ GraphApp.module("Show", function(Show, GraphApp, Backbone, Marionette, $, _){
 			Backbone.history.navigate("graphs");
 			GraphApp.headRegion.empty();
 			GraphApp.mainRegion.empty();
-			GraphApp.mainRegion.show(graphsView)
+			GraphApp.mainRegion.show(graphsView);
 			
 		}
-	}  	
+	};  	
 });
 
 
