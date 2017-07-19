@@ -1,20 +1,20 @@
 var alphabeticalSort = function(a,b){
 			return -b.title.localeCompare(a.title)
 		}
-	
+
 	var numericalSort = function(a,b){
 			return  b.count - a.count;
 		}
 
 
 function chartDisplay(query, chart, sort){
-	//d3.json(data, function(data){	
+	//d3.json(data, function(data){
 
 	var jsonarray = [];
-	
+
 console.log(query);
 	//
-	$.get("http://sparql-staging.scta.info/ds/query", {"query" : query}, function( resp ) {
+	$.get("https://sparql-staging.scta.info/ds/query", {"query" : query}, function( resp ) {
 	//$.get("http://localhost:3030/ds/query", {"query" : query}, function( resp ) {
 
 		var items = resp.results.bindings
@@ -23,10 +23,10 @@ console.log(query);
 			jsonarray.push({"item" : items[x].ref.value, "title" : items[x].reftitle.value, "count" : items[x].count.value});
 		};
 		data = jsonarray;
-			
 
-		data.sort(sort)	
-		//this filter is required to make sure count is recognized as integers not strings 
+
+		data.sort(sort)
+		//this filter is required to make sure count is recognized as integers not strings
 		// see: http://stackoverflow.com/questions/10709950/get-the-real-max-of-an-array-in-d3
 		data.filter(function(d,i) {
   	  d.count = +d.count;
@@ -36,12 +36,12 @@ console.log(query);
 		var titleArray = [];
 		for (x in data){
 			countArray.push(data[x].count);
-			
+
 		};
 		for (x in data){
 			titleArray.push(data[x].title);
 		};
-			
+
 		var margin = {top: 30, right: 30, bottom: 40, left: 50}
 		var height = 500 - margin.top - margin.bottom,
 		width = 1200 - margin.left - margin.right;
@@ -54,7 +54,7 @@ console.log(query);
 
 
 		//var xScale = d3.scale.linear()
-			//.domain([0, d3.max(countArray)]) 
+			//.domain([0, d3.max(countArray)])
 			//.range([0, height]);
 
 		//var yScale = d3.scale.ordinal()
@@ -62,23 +62,23 @@ console.log(query);
 			//.rangeBands([0, height])
 
 		var yScale = d3.scale.linear()
-			.domain([0, d3.max(countArray)]) 
+			.domain([0, d3.max(countArray)])
 			.range([0, height]);
 
 		var xScale = d3.scale.ordinal()
 			.domain(d3.range(0, data.length))
 			.rangeBands([0, width], .5)
 
-			
 
-		
+
+
 		var tooltip = d3.select('body').append('div')
 			.attr('class', 'tooltip')
 			.style('position', 'absolute')
 			.style('padding', '0 10px')
 			.style('background', 'white')
 			.style('opacity', 0)
-			
+
 		var canvas = d3.select("div#" + chart).append("svg")
 			.attr("id", chart)
 			.style('background', '#E7E0CB')
@@ -98,8 +98,8 @@ console.log(query);
 						.attr('y', height)
 						.attr("width", xScale.rangeBand())
 						.attr("x", function (d,i) {return xScale(i);})
-						
-						
+
+
 						.on('mouseover', function(d) {
 							tooltip.transition()
 								.style('opacity', .9)
@@ -109,7 +109,7 @@ console.log(query);
 								.style('top', (d3.event.pageY + 0) + 'px')
 								//.style('left', d3.select("svg#" + chart).left + 150 + 'px')
 								//.style('top', d3.select("svg#" + chart).top + 125 + 'px')
-							
+
 								d3.select(this)
 									.style('opacity', .5);
 						})
@@ -119,7 +119,7 @@ console.log(query);
 								.transition()
 								.style('opacity', 1);
 						})
-						
+
 			canvas.transition()
 				.attr("height", function (d) { return yScale(d.count)})
 				.attr("y", function(d) { return height - yScale(d.count) })
@@ -136,7 +136,7 @@ console.log(query);
 					.orient('left')
 					.ticks(10)
 				var vGuide = d3.select('svg#' + chart).append('g')
-					vAxis(vGuide) 
+					vAxis(vGuide)
 					vGuide.attr('transform', 'translate('+ margin.left+', '+margin.top + ')')
 					vGuide.selectAll('path')
 						.style({fill: 'none', stroke: "#000"})
@@ -155,11 +155,11 @@ console.log(query);
 					}
 					));
 
-							
+
 
 				var hGuide = d3.select('svg#' + chart).append('g')
 					hAxis(hGuide)
-					hGuide.attr('transform', 'translate('+ margin.left+', '+ (height + margin.top) + ')')	
+					hGuide.attr('transform', 'translate('+ margin.left+', '+ (height + margin.top) + ')')
 					hGuide.selectAll('path')
 						.style({fill: 'none', stroke: "#000"})
 					hGuide.selectAll('line')
